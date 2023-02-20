@@ -3,5 +3,6 @@ matplotlib
 ta
 plotly
 streamlit
+convertdate
 pystan==2.19.1.1
 fbprophet
