@@ -1,4 +1,4 @@
-yfinance=0.1.72
+yfinance==0.1.72
 matplotlib
 ta
 plotly
