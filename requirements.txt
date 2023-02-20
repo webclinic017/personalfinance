@@ -1,4 +1,4 @@
 yfinance==0.2.12
 matplotlib==3.6.
 fbprophet
-pystan
+pystan==2.19.1.1
