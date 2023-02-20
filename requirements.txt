@@ -1,11 +1,11 @@
 altair==4.2.0
-# anaconda-clean @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_355f5d45-4286-44ed-8ffe-4cfe2dab569cbs6o5bqv/croots/recipe/anaconda-clean_1652723726562/work
+# anpython -m pip install --upgrade pipaconda-clean @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_355f5d45-4286-44ed-8ffe-4cfe2dab569cbs6o5bqv/croots/recipe/anaconda-clean_1652723726562/work
 appdirs==1.4.4
 attrs==22.2.0
 bcrypt==4.0.1
 beautifulsoup4==4.11.2
 blinker==1.5
-brotlipy @ file:///Users/runner/miniforge3/conda-bld/brotlipy_1666764778428/work
+# brotlipy @ file:///Users/runner/miniforge3/conda-bld/brotlipy_1666764778428/work
 cachetools==5.2.1
 certifi @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_5d968ni_yn/croot/certifi_1671487774636/work/certifi
 cffi @ file:///Users/runner/miniforge3/conda-bld/cffi_1671179432479/work
