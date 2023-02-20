@@ -1,6 +1,6 @@
 import yfinance as yf
 import matplotlib.pyplot as plt
-import mplfinance as mpf
+# import mplfinance as mpf
 import pandas as pd
 import streamlit as st
 from datetime import date, datetime
