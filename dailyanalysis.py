@@ -14,11 +14,11 @@ from ta.volatility import BollingerBands
 from ta.trend import MACD
 from ta.momentum import RSIIndicator
 import numpy as np
-from trading_strategies import price_mean_reverse_strategy
-from trading_strategies import price_momentum_strategy, priceactionstrategy,calculate_rsi
+from trading_strategies import price_mean_reverse_strategy, moving_avg
+from trading_strategies import price_momentum_strategy, priceactionstrategy,rsi
 import datetime
-
-
+import backtrader as bt
+from backtesting import MyStrategy
 
 # @st.cache
 def get_historical_data(symbol, start_date = None, enddate = None):
@@ -54,6 +54,11 @@ st.title('Stock Forecast App')
 stocks = ('SPY','TSLA','QQQ','GOOG', 'AAPL', 'MSFT', 'GME','SONATSOFTW.NS','YESBANK.NS')
 
 selected_stock = st.sidebar.selectbox('Select dataset for prediction', stocks)
+
+trading_strategy = ["Strategy1"]
+selected_stocks_for_strategies = st.sidebar.multiselect('Select stockes for the strateges', stocks)
+selected_strategy = st.sidebar.selectbox('Select strategy to execute', trading_strategy)
+
 url = f'https://finance.yahoo.com/quote/{selected_stock}?p={selected_stock}'
 summary_data = getdata(url)
 tickerdata = [summary_data[0], summary_data[1]]
@@ -120,7 +125,7 @@ def predict_prices(data):
 
 
 # Calculate the RSI for a window of 14 days
-data["RSI"] = calculate_rsi(data, 14)
+data["RSI"] = rsi(data, 14)
 
 benchmarkRSI:int = 30
 
@@ -139,8 +144,8 @@ benchmarkRSI:int = 30
 below_10 = data[data["RSI"] < benchmarkRSI]
 below_10_2day = below_10["RSI"].rolling(window=2).apply(lambda x: all(x < 30))
 
-st.subheader("Dates when "+selected_stock + " RSI goes below " + benchmarkRSI.__str__())
-st.write(below_10_2day)
+# st.subheader("Dates when "+selected_stock + " RSI goes below " + benchmarkRSI.__str__())
+# st.write(below_10_2day)
 # for date in below_10_2day.index:
 #    st.write(data.iloc[date])
 
@@ -241,3 +246,77 @@ st.info("Breakout Strategy: This strategy involves identifying stocks or ETFs th
 # 5% Retrace 
 # stop loss: 5%
 # > PE Ratio
+
+def my_strategy(prices):
+    # Compute the returns
+    returns = np.log(prices).diff()
+
+    # Define the trading signal (e.g., buy when the price increases by 1%)
+    signal = (returns > 0.01).astype(int)
+
+    # Compute the strategy returns
+    strategy_returns = signal.shift(1) * returns
+
+    return strategy_returns
+
+def test_strategy(stockdata):
+        # Load historical price data
+        # data = bt.feeds.PandasData(dataname=stockdata)
+        data = bt.feeds.PandasData(
+        dataname=stockdata,
+        datetime="date",
+        open='open',
+        high='high',
+        low='low',
+        close='Adj Close',
+        volume='volume'
+        # openinterest="Open Interest"
+    )
+        
+
+        # Instantiate a `backtrader` instance
+        cerebro = bt.Cerebro()
+
+        # Add the trading strategy to the `backtrader` instance
+        cerebro.addstrategy(MyStrategy)
+
+        # Add the historical price data to the `backtrader` instance
+        cerebro.adddata(data)
+
+        # Set the initial capital and commission
+        cerebro.broker.setcash(100000.0)
+        cerebro.broker.setcommission(commission=0.01)
+
+        # Run the backtest
+        cerebro.run()
+
+        # Print the final portfolio value
+        st.write('Final portfolio value: {:.2f}'.format(cerebro.broker.getvalue()))
+
+
+if selected_strategy == "Strategy1":
+    today = datetime.date.today()
+    before = today - datetime.timedelta(days=30)
+    # start_date = st.sidebar.date_input('Start date', before)
+    # end_date = st.sidebar.date_input('End date', today)
+    st.subheader("Strategy backTest: ")
+
+    st.info("# Buy when the short-term MA crosses above the long-term MA. Sell when the short-term MA crosses below the long-term MA")
+    for stock in selected_stocks_for_strategies:
+        
+        stock_data = get_historical_data(stock,start_date,end_date)
+        # st.write(stock_data.head(10))
+        indexed_data = stock_data.sort_values('Date')
+        
+        st.write('Running strategy for the stock ' + stock + ' Invested Amount :100000' )
+
+        test_strategy(indexed_data)
+
+        # data['MA7'] = moving_avg(stocks_data,7)
+        # data['MA14'] = moving_avg(stocks_data,14)
+        # data['MA21'] = moving_avg(stocks_data,21)
+        # data['Vol14'] = data['Volume'].rolling(window=14).mean()
+        # current_rsi = rsi(data, 14)[-1]
+        
+        # st.write("MA7")
+

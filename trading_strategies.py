@@ -102,12 +102,15 @@ def priceactionstrategy(data):
 
 
 # Define a function to calculate the RSI
-def calculate_rsi(data, window):
+def rsi(data, period):
     delta = data["Adj Close"].diff()
     up = delta.clip(lower=0)
     down = -1*delta.clip(upper=0)
-    ema_up = up.ewm(com=window-1, adjust=False).mean()
-    ema_down = down.ewm(com=window-1, adjust=False).mean()
+    ema_up = up.ewm(com=period-1, adjust=False).mean()
+    ema_down = down.ewm(com=period-1, adjust=False).mean()
     rs = ema_up/ema_down
     rsi = 100 - (100 / (1 + rs))
     return rsi
+
+def moving_avg(prices,period):
+    return prices['Adj Close'].rolling(window=period).mean()
