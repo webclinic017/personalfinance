@@ -4,6 +4,6 @@ ta
 plotly
 streamlit
 convertdate
-pystan==2.19.1.1
-fbprophet==0.7.1
+# pystan==2.19.1.1
+# fbprophet==0.7.1
 numpy
